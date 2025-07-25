@@ -36,6 +36,7 @@ class KeyboardBarcodeScanner {
             timing: 'auto',
             guessSymbology: false,
             allowedSymbologies: [],
+            asciiMode: false
         }, options || {})
 
         this.#internal = {
@@ -183,7 +184,13 @@ class KeyboardBarcodeScanner {
             /* Just a regular keypress */
 
             if (e.key.length === 1 && !e.ctrlKey) {
-                this.#internal.buffer.push(e.key.charCodeAt(0));
+                if (this.#options.asciiMode) {
+                    /* In ASCII mode, use keyCode as charCode */
+                    this.#internal.buffer.push(e.keyCode);
+                }
+                else {
+                    this.#internal.buffer.push(e.key.charCodeAt(0));
+                }
             }
 
             /* Handle Ctrl + X key modifiers */
