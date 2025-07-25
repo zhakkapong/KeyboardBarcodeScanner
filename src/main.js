@@ -36,7 +36,8 @@ class KeyboardBarcodeScanner {
             timing: 'auto',
             guessSymbology: false,
             allowedSymbologies: [],
-            asciiMode: false
+            asciiMode: false,
+            endCharacter: false // 'Enter', 'Tab', 'Escape'
         }, options || {})
 
         this.#internal = {
@@ -209,7 +210,21 @@ class KeyboardBarcodeScanner {
                     'Escape:':  0x1b
                 }
 
-                if (keyMapping[e.key]) {
+                if (this.#options.endCharacter && this.#options.endCharacter.includes(e.key)) {
+                    if (this.#options.debug) {
+                        console.log(`end character detected: ${e.key}`);
+                    }
+
+                    try {
+                        this.#parse(this.#internal.buffer);
+                    } catch (e) {
+                        console.error(e);
+                    }
+
+                    this.#reset();
+                    return;
+                }
+                else if (keyMapping[e.key]) {
                     this.#internal.buffer.push(keyMapping[e.key]);
                 }
             }
